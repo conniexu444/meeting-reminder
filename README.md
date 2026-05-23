@@ -1,5 +1,7 @@
 # ✈️ MeetingReminder
 
+![MeetingReminder demo](media/demo.gif)
+
 A macOS app that flies a hand-drawn pink airplane across your screen five
 minutes before each calendar meeting, trailing a pink banner with the meeting
 title — e.g. **"Standup in 5 min"**.
