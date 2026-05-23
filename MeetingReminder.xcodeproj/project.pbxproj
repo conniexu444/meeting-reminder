@@ -261,9 +261,9 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "MeetingReminder reads upcoming events so it can fly a banner across your screen 5 minutes before each meeting.";
+				INFOPLIST_KEY_LSUIElement = NO;
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "MeetingReminder reads upcoming events so it can fly a banner across your screen 5 minutes before each meeting.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "MeetingReminder reads upcoming events so it can fly a banner across your screen 5 minutes before each meeting.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -298,9 +298,9 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "MeetingReminder reads upcoming events so it can fly a banner across your screen 5 minutes before each meeting.";
+				INFOPLIST_KEY_LSUIElement = NO;
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "MeetingReminder reads upcoming events so it can fly a banner across your screen 5 minutes before each meeting.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "MeetingReminder reads upcoming events so it can fly a banner across your screen 5 minutes before each meeting.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

@@ -1,10 +1,12 @@
 # ✈️ MeetingReminder
 
-A macOS menu bar app that flies a little pink airplane across your screen
-five minutes before each Google Calendar meeting, trailing a banner that says
+A macOS app that flies a little pink airplane across your screen five minutes
+before each calendar meeting, trailing a banner that says
 **"Meeting with X in Y min"**.
 
-Native SwiftUI · lives in the menu bar · no Dock icon · works over fullscreen apps.
+Reads from your Mac's Calendar.app (which can include iCloud, Google,
+Exchange — anything you've connected). Native SwiftUI · lives in the Dock and
+menu bar · works over fullscreen apps.
 
 ---
 
@@ -12,58 +14,54 @@ Native SwiftUI · lives in the menu bar · no Dock icon · works over fullscreen
 
 - **macOS 14** (Sonoma) or later
 - **Xcode 16** or later
-- A **Google account** with calendar events
+- A configured Calendar.app
 
-No Apple Developer account, team ID, or signing certificate required —
-the project uses ad-hoc signing (`Sign to Run Locally`).
+No Apple Developer account required — the project uses ad-hoc signing
+(`Sign to Run Locally`).
 
 ---
 
 ## Setup
 
-### 1. Clone the repo
-
 ```bash
-git clone https://github.com/YOUR-USERNAME/meeting-reminder.git
+git clone https://github.com/conniexu444/meeting-reminder.git
 cd meeting-reminder
-```
-
-### 2. Get your Google OAuth credentials
-
-Follow [`GOOGLE_SETUP.md`](GOOGLE_SETUP.md) (≈5 minutes). At the end you'll have
-a **Client ID** and **Client Secret** for a Desktop-app OAuth client.
-
-### 3. Create your local config
-
-```bash
-cp Config.example.swift MeetingReminder/Config.swift
-```
-
-Open `MeetingReminder/Config.swift` and paste your Client ID + Secret into the two
-placeholder strings. `Config.swift` is in `.gitignore`, so your credentials
-stay on your machine.
-
-### 4. Open and run
-
-```bash
 open MeetingReminder.xcodeproj
 ```
 
-Press **⌘R**. The app launches into the menu bar (no Dock icon).
-Look for the ✈️ near the top-right of your screen.
-
----
+In Xcode, press **⌘R**. The ✈️ appears in your menu bar.
 
 ## Usage
 
-1. Click the ✈️ in your menu bar
-2. **Connect Google Calendar** — a browser tab opens for Google sign-in.
-   After you grant access, the tab will say "✅ MeetingReminder connected!"
+1. Click the ✈️ in the menu bar
+2. Click **Grant Calendar access** → click **Allow** on the macOS prompt
 3. That's it — the app polls your calendar once a minute and shows the
-   airplane ~5 minutes before each upcoming meeting.
+   airplane ~5 minutes before each upcoming meeting
 
 The menu also has a **Test airplane** button that triggers the animation on
 demand, useful for tweaking the visuals.
+
+---
+
+## Adding your Google Calendar
+
+MeetingReminder reads from Apple's Calendar.app via `EventKit`, which means any
+calendar you've connected there — including Google — shows up automatically.
+You don't need a separate Google integration. Just connect Google to Calendar.app:
+
+1. Open **System Settings → Internet Accounts** (older macOS: **System
+   Preferences → Internet Accounts**)
+2. Click **Add Account → Google**
+3. Sign in with your Google account and allow access
+4. Make sure **Calendars** is toggled on for that account
+5. Open **Calendar.app** and confirm your Google events appear
+6. Back in MeetingReminder, click **Test airplane** to confirm it's reading
+   from your calendars — or wait for the next real meeting
+
+That's it. No API keys, no OAuth client setup, no developer console.
+
+If your Google events aren't showing up in Calendar.app yet, give it a minute
+to sync, then quit and reopen MeetingReminder so it re-reads the calendar list.
 
 ---
 
@@ -75,12 +73,12 @@ All the visual knobs live in `MeetingReminder/AirplaneView.swift`:
 |---|---|
 | Flight duration (slower/faster) | `flightDuration` |
 | Plane size | `Image("airplane")` → `frame(width:height:)` |
-| Banner padding (text-to-edge spacing) | `padding(.horizontal:)` + `padding(.vertical:)` |
+| Banner padding | `padding(.horizontal:)` + `padding(.vertical:)` |
 | Banner-plane overlap | `HStack(spacing:)` |
 | Font / text size / color | `font(.custom(...))`, `foregroundStyle(...)` |
 | Vertical screen position | `AirplaneOverlayWindow.swift` → `yPos` |
 
-How many minutes before a meeting to alert is in `Config.swift`:
+How many minutes before a meeting to alert is in `CalendarPoller.swift`:
 
 ```swift
 static let alertMinutesBefore = 5
@@ -93,26 +91,14 @@ Swap the airplane or banner artwork by replacing the PNGs in
 
 ## How it works
 
-- **Menu bar app** — `MenuBarExtra` lives in the menu bar with `LSUIElement = YES`
-  so no Dock icon
-- **OAuth 2.0** — runs a one-shot localhost server (port 8080) to catch
-  Google's redirect, then exchanges the code for access + refresh tokens
-- **Calendar polling** — every 60 seconds, fetches the next hour of events
-  from the Google Calendar v3 REST API
+- **Menu bar + Dock app** — `MenuBarExtra` for the menu, regular Dock icon
+- **Calendar access** — uses Apple's `EventKit` framework. One macOS privacy
+  prompt the first time you grant access. Reads from every calendar configured
+  in Calendar.app, including any synced Google/Exchange accounts.
+- **Polling** — every 60 seconds, fetches the next hour of events
 - **The airplane** — a borderless, transparent `NSPanel` at screen-saver
   window level so it floats above every other window, including fullscreen apps.
   Inside is a SwiftUI view that animates `xOffset` from off-left to off-right.
-
----
-
-## Troubleshooting
-
-| Problem | Fix |
-|---|---|
-| Browser opens but Safari says "can't connect to server" | App Sandbox is enabled. Confirm `ENABLE_APP_SANDBOX = NO` in Build Settings |
-| App appears in Dock | `LSUIElement` build setting isn't `YES` |
-| Build errors about `ObservableObject` or `@Published` | Ensure `import Combine` is at the top of `AppController.swift` |
-| Strict-concurrency warnings | Project setting **Default Actor Isolation** → `nonisolated` |
 
 ---
 

@@ -1,17 +1,10 @@
 import Foundation
 
-enum CalendarSourceType: String, CaseIterable, Identifiable {
-    case apple
-    case google
-
-    var id: String { rawValue }
-
-    var displayName: String {
-        switch self {
-        case .apple:  "Apple Calendar"
-        case .google: "Google Calendar"
-        }
-    }
+struct CalendarEvent: Identifiable {
+    let id: String
+    let title: String
+    let startDate: Date
+    let endDate: Date
 }
 
 protocol CalendarSourceProvider: AnyObject {

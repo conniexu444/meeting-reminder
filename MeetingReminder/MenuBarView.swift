@@ -5,51 +5,17 @@ struct MenuBarView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            // Source picker
-            Picker("Source", selection: $controller.sourceType) {
-                ForEach(CalendarSourceType.allCases) { type in
-                    Text(type.displayName).tag(type)
+            if controller.hasAppleAccess {
+                Label("Calendar connected", systemImage: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+            } else {
+                Button {
+                    controller.requestAppleAccess()
+                } label: {
+                    Label("Grant Calendar access", systemImage: "calendar")
+                        .font(.system(size: 13, weight: .medium))
                 }
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-
-            Divider()
-
-            // Source-specific status & action
-            switch controller.sourceType {
-            case .apple:
-                if controller.hasAppleAccess {
-                    Label("Apple Calendar connected", systemImage: "checkmark.circle.fill")
-                        .foregroundStyle(.green)
-                } else {
-                    Button {
-                        controller.requestAppleAccess()
-                    } label: {
-                        Label("Grant Apple Calendar access", systemImage: "calendar")
-                            .font(.system(size: 13, weight: .medium))
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-            case .google:
-                if controller.isGoogleAuthenticated {
-                    Label("Google Calendar connected", systemImage: "checkmark.circle.fill")
-                        .foregroundStyle(.green)
-                    Button {
-                        controller.signOut()
-                    } label: {
-                        Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right")
-                    }
-                    .buttonStyle(.plain)
-                } else {
-                    Button {
-                        controller.signIn()
-                    } label: {
-                        Label("Connect Google Calendar", systemImage: "calendar")
-                            .font(.system(size: 13, weight: .medium))
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
+                .buttonStyle(.borderedProminent)
             }
 
             Divider()
@@ -71,6 +37,6 @@ struct MenuBarView: View {
             .buttonStyle(.plain)
         }
         .padding(14)
-        .frame(width: 280)
+        .frame(width: 240)
     }
 }

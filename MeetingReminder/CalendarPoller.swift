@@ -2,6 +2,12 @@ import Foundation
 
 @MainActor
 final class CalendarPoller {
+    /// How many minutes before a meeting to fire the alert.
+    static let alertMinutesBefore = 5
+    /// Trigger when remaining minutes fall in [alertMinutesBefore - 1, alertMinutesBefore + 1].
+    private static let alertWindowLow  = alertMinutesBefore - 1
+    private static let alertWindowHigh = alertMinutesBefore + 1
+
     var onMeetingSoon: ((CalendarEvent, Int) -> Void)?
 
     private let service: any CalendarSourceProvider
@@ -34,8 +40,8 @@ final class CalendarPoller {
             let now = Date()
             for event in events {
                 let minutes = Int(event.startDate.timeIntervalSince(now) / 60)
-                guard minutes >= Config.alertWindowLow,
-                      minutes <= Config.alertWindowHigh,
+                guard minutes >= Self.alertWindowLow,
+                      minutes <= Self.alertWindowHigh,
                       !notifiedIDs.contains(event.id) else { continue }
 
                 notifiedIDs.insert(event.id)

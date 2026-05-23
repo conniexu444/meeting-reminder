@@ -10,8 +10,7 @@ struct MeetingReminderApp: App {
             MenuBarView()
                 .environmentObject(controller)
         } label: {
-            // Fills with yellow when a meeting is imminent (handled by AppController in future)
-            Image(systemName: "airplane")
+            Image("menubar")
         }
         .menuBarExtraStyle(.window)
     }
