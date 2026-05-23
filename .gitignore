@@ -25,4 +25,4 @@ Package.pins
 Package.resolved
 
 # Local config containing OAuth secrets — never commit
-MeetingBuddy/Config.swift
+MeetingReminder/Config.swift

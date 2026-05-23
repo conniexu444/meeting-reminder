@@ -4,7 +4,7 @@
 //   1. Follow GOOGLE_SETUP.md to create a Google Cloud project and get an
 //      OAuth 2.0 Client ID + Secret for a "Desktop app" client.
 //   2. Copy this file to `Config.swift` in the same directory:
-//        cp MeetingBuddy/Config.example.swift MeetingBuddy/Config.swift
+//        cp MeetingReminder/Config.example.swift MeetingReminder/Config.swift
 //   3. Open the new Config.swift and replace the placeholder values below.
 //
 // `Config.swift` is git-ignored, so your secrets stay local.

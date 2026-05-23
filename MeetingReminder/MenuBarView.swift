@@ -66,7 +66,7 @@ struct MenuBarView: View {
             Button {
                 NSApplication.shared.terminate(nil)
             } label: {
-                Label("Quit MeetingBuddy", systemImage: "power")
+                Label("Quit MeetingReminder", systemImage: "power")
             }
             .buttonStyle(.plain)
         }

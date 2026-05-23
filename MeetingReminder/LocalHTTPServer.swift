@@ -38,7 +38,7 @@ final class LocalHTTPServer: @unchecked Sendable {
                   let code = self.extractCode(from: request) else { return }
 
             let html = "<html><body style='font-family:system-ui;padding:40px'>" +
-                       "<h2>✅ MeetingBuddy connected!</h2><p>You can close this tab.</p></body></html>"
+                       "<h2>✅ MeetingReminder connected!</h2><p>You can close this tab.</p></body></html>"
             let response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n\(html)"
             connection.send(content: Data(response.utf8),
                             completion: .contentProcessed { _ in connection.cancel() })

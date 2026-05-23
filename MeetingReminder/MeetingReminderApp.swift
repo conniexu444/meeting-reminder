@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct MeetingBuddyApp: App {
+struct MeetingReminderApp: App {
     @StateObject private var controller = AppController()
 
     var body: some Scene {

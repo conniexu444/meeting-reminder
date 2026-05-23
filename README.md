@@ -1,4 +1,4 @@
-# ✈️ MeetingBuddy
+# ✈️ MeetingReminder
 
 A macOS menu bar app that flies a little pink airplane across your screen
 five minutes before each Google Calendar meeting, trailing a banner that says
@@ -24,8 +24,8 @@ the project uses ad-hoc signing (`Sign to Run Locally`).
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/MeetingBuddy.git
-cd MeetingBuddy
+git clone https://github.com/YOUR-USERNAME/meeting-reminder.git
+cd meeting-reminder
 ```
 
 ### 2. Get your Google OAuth credentials
@@ -36,17 +36,17 @@ a **Client ID** and **Client Secret** for a Desktop-app OAuth client.
 ### 3. Create your local config
 
 ```bash
-cp Config.example.swift MeetingBuddy/Config.swift
+cp Config.example.swift MeetingReminder/Config.swift
 ```
 
-Open `MeetingBuddy/Config.swift` and paste your Client ID + Secret into the two
+Open `MeetingReminder/Config.swift` and paste your Client ID + Secret into the two
 placeholder strings. `Config.swift` is in `.gitignore`, so your credentials
 stay on your machine.
 
 ### 4. Open and run
 
 ```bash
-open MeetingBuddy.xcodeproj
+open MeetingReminder.xcodeproj
 ```
 
 Press **⌘R**. The app launches into the menu bar (no Dock icon).
@@ -58,7 +58,7 @@ Look for the ✈️ near the top-right of your screen.
 
 1. Click the ✈️ in your menu bar
 2. **Connect Google Calendar** — a browser tab opens for Google sign-in.
-   After you grant access, the tab will say "✅ MeetingBuddy connected!"
+   After you grant access, the tab will say "✅ MeetingReminder connected!"
 3. That's it — the app polls your calendar once a minute and shows the
    airplane ~5 minutes before each upcoming meeting.
 
@@ -69,7 +69,7 @@ demand, useful for tweaking the visuals.
 
 ## Customization
 
-All the visual knobs live in `MeetingBuddy/AirplaneView.swift`:
+All the visual knobs live in `MeetingReminder/AirplaneView.swift`:
 
 | What | Where |
 |---|---|
@@ -87,7 +87,7 @@ static let alertMinutesBefore = 5
 ```
 
 Swap the airplane or banner artwork by replacing the PNGs in
-`MeetingBuddy/Assets.xcassets/airplane.imageset/` and `banner.imageset/`.
+`MeetingReminder/Assets.xcassets/airplane.imageset/` and `banner.imageset/`.
 
 ---
 

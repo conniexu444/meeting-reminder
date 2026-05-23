@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		F9DF09562FBFFF3C00F3F693 /* MeetingBuddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeetingBuddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F9DF09562FBFFF3C00F3F693 /* MeetingReminder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeetingReminder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		F9DF09582FBFFF3C00F3F693 /* MeetingBuddy */ = {
+		F9DF09582FBFFF3C00F3F693 /* MeetingReminder */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MeetingBuddy;
+			path = MeetingReminder;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		F9DF094D2FBFFF3C00F3F693 = {
 			isa = PBXGroup;
 			children = (
-				F9DF09582FBFFF3C00F3F693 /* MeetingBuddy */,
+				F9DF09582FBFFF3C00F3F693 /* MeetingReminder */,
 				F9DF09572FBFFF3C00F3F693 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +40,7 @@
 		F9DF09572FBFFF3C00F3F693 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F9DF09562FBFFF3C00F3F693 /* MeetingBuddy.app */,
+				F9DF09562FBFFF3C00F3F693 /* MeetingReminder.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F9DF09552FBFFF3C00F3F693 /* MeetingBuddy */ = {
+		F9DF09552FBFFF3C00F3F693 /* MeetingReminder */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F9DF09612FBFFF3D00F3F693 /* Build configuration list for PBXNativeTarget "MeetingBuddy" */;
+			buildConfigurationList = F9DF09612FBFFF3D00F3F693 /* Build configuration list for PBXNativeTarget "MeetingReminder" */;
 			buildPhases = (
 				F9DF09522FBFFF3C00F3F693 /* Sources */,
 				F9DF09532FBFFF3C00F3F693 /* Frameworks */,
@@ -61,13 +61,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				F9DF09582FBFFF3C00F3F693 /* MeetingBuddy */,
+				F9DF09582FBFFF3C00F3F693 /* MeetingReminder */,
 			);
-			name = MeetingBuddy;
+			name = MeetingReminder;
 			packageProductDependencies = (
 			);
-			productName = MeetingBuddy;
-			productReference = F9DF09562FBFFF3C00F3F693 /* MeetingBuddy.app */;
+			productName = MeetingReminder;
+			productReference = F9DF09562FBFFF3C00F3F693 /* MeetingReminder.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = F9DF09512FBFFF3C00F3F693 /* Build configuration list for PBXProject "MeetingBuddy" */;
+			buildConfigurationList = F9DF09512FBFFF3C00F3F693 /* Build configuration list for PBXProject "MeetingReminder" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F9DF09552FBFFF3C00F3F693 /* MeetingBuddy */,
+				F9DF09552FBFFF3C00F3F693 /* MeetingReminder */,
 			);
 		};
 /* End PBXProject section */
@@ -250,7 +250,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = MeetingBuddy/MeetingBuddy.entitlements;
+				CODE_SIGN_ENTITLEMENTS = MeetingReminder/MeetingReminder.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -262,15 +262,15 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "MeetingBuddy reads upcoming events so it can fly a banner across your screen 5 minutes before each meeting.";
-				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "MeetingBuddy reads upcoming events so it can fly a banner across your screen 5 minutes before each meeting.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "MeetingReminder reads upcoming events so it can fly a banner across your screen 5 minutes before each meeting.";
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "MeetingReminder reads upcoming events so it can fly a banner across your screen 5 minutes before each meeting.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.connie.MeetingBuddy;
+				PRODUCT_BUNDLE_IDENTIFIER = com.connie.MeetingReminder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -287,7 +287,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = MeetingBuddy/MeetingBuddy.entitlements;
+				CODE_SIGN_ENTITLEMENTS = MeetingReminder/MeetingReminder.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -299,15 +299,15 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "MeetingBuddy reads upcoming events so it can fly a banner across your screen 5 minutes before each meeting.";
-				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "MeetingBuddy reads upcoming events so it can fly a banner across your screen 5 minutes before each meeting.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "MeetingReminder reads upcoming events so it can fly a banner across your screen 5 minutes before each meeting.";
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "MeetingReminder reads upcoming events so it can fly a banner across your screen 5 minutes before each meeting.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.connie.MeetingBuddy;
+				PRODUCT_BUNDLE_IDENTIFIER = com.connie.MeetingReminder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -322,7 +322,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F9DF09512FBFFF3C00F3F693 /* Build configuration list for PBXProject "MeetingBuddy" */ = {
+		F9DF09512FBFFF3C00F3F693 /* Build configuration list for PBXProject "MeetingReminder" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F9DF095F2FBFFF3D00F3F693 /* Debug */,
@@ -331,7 +331,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F9DF09612FBFFF3D00F3F693 /* Build configuration list for PBXNativeTarget "MeetingBuddy" */ = {
+		F9DF09612FBFFF3D00F3F693 /* Build configuration list for PBXNativeTarget "MeetingReminder" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F9DF09622FBFFF3D00F3F693 /* Debug */,

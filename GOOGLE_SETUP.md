@@ -4,7 +4,7 @@
 
 1. Go to https://console.cloud.google.com/
 2. Click **Select a project** → **New Project**
-3. Name it `MeetingBuddy`, click **Create**
+3. Name it `MeetingReminder`, click **Create**
 
 ## 2. Enable the Calendar API
 
@@ -18,12 +18,12 @@
 2. Click **+ Create Credentials → OAuth client ID**
 3. If prompted to configure the consent screen first:
    - Choose **External**, click **Create**
-   - Fill in App name: `MeetingBuddy`, your email for support + developer fields
+   - Fill in App name: `MeetingReminder`, your email for support + developer fields
    - Click **Save and Continue** through Scopes and Test Users (no changes needed)
    - Add yourself as a Test User on the "Test users" step
    - Back on the Dashboard, click **+ Create Credentials → OAuth client ID** again
 4. For **Application type**, choose **Desktop app**
-5. Name it `MeetingBuddy Desktop`
+5. Name it `MeetingReminder Desktop`
 6. Click **Create**
 
 ## 4. Copy your credentials
