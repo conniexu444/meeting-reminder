@@ -20,6 +20,22 @@ struct MenuBarView: View {
 
             Divider()
 
+            // Speed picker — how long the plane takes to cross the screen
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Plane speed")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(.secondary)
+                Picker("Plane speed", selection: $controller.flightDuration) {
+                    Text("Slow").tag(AppController.slowSpeed)
+                    Text("Normal").tag(AppController.normalSpeed)
+                    Text("Fast").tag(AppController.fastSpeed)
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+            }
+
+            Divider()
+
             Button {
                 controller.testAirplane()
             } label: {
@@ -37,6 +53,6 @@ struct MenuBarView: View {
             .buttonStyle(.plain)
         }
         .padding(14)
-        .frame(width: 240)
+        .frame(width: 260)
     }
 }

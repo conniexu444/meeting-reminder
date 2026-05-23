@@ -6,12 +6,23 @@ import Combine
 @MainActor
 final class AppController: ObservableObject {
     @Published var hasAppleAccess: Bool = false
+    @Published var flightDuration: Double {
+        didSet { UserDefaults.standard.set(flightDuration, forKey: "flightDuration") }
+    }
+
+    /// Preset speeds (seconds for the plane to cross the screen).
+    static let slowSpeed:   Double = 22
+    static let normalSpeed: Double = 14
+    static let fastSpeed:   Double = 8
 
     private let appleService = AppleCalendarService()
     private var poller: CalendarPoller?
     private var overlayWindows: [AirplaneOverlayWindow] = []
 
     init() {
+        let saved = UserDefaults.standard.double(forKey: "flightDuration")
+        self.flightDuration = saved > 0 ? saved : Self.normalSpeed
+
         hasAppleAccess = appleService.hasAccess
         startPollingIfReady()
     }
@@ -55,13 +66,18 @@ final class AppController: ObservableObject {
     }
 
     private func showAirplane(for event: CalendarEvent, minutesUntil: Int) {
+        let duration = flightDuration
         DispatchQueue.main.async {
-            let window = AirplaneOverlayWindow(meetingTitle: event.title, minutesUntil: minutesUntil)
+            let window = AirplaneOverlayWindow(
+                meetingTitle:   event.title,
+                minutesUntil:   minutesUntil,
+                flightDuration: duration
+            )
             window.makeKeyAndOrderFront(nil)
             self.overlayWindows.append(window)
 
-            // Release after animation finishes
-            DispatchQueue.main.asyncAfter(deadline: .now() + 15.5) {
+            // Release shortly after the animation finishes (fade-out is 0.6s)
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration + 1.5) {
                 self.overlayWindows.removeAll { $0 === window }
                 window.close()
             }

@@ -4,7 +4,7 @@ import SwiftUI
 // Transparent, click-through panel that floats above every window (including fullscreen apps).
 final class AirplaneOverlayWindow: NSPanel {
 
-    init(meetingTitle: String, minutesUntil: Int) {
+    init(meetingTitle: String, minutesUntil: Int, flightDuration: Double) {
         let screen = NSScreen.main ?? NSScreen.screens[0]
         let sf = screen.frame
         let height: CGFloat = 110
@@ -27,7 +27,9 @@ final class AirplaneOverlayWindow: NSPanel {
         self.collectionBehavior  = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
         self.isReleasedWhenClosed = false
 
-        let rootView     = AirplaneView(meetingTitle: meetingTitle, minutesUntil: minutesUntil)
+        let rootView     = AirplaneView(meetingTitle: meetingTitle,
+                                        minutesUntil:  minutesUntil,
+                                        flightDuration: flightDuration)
         let hostingView  = NSHostingView(rootView: rootView)
         hostingView.frame = NSRect(x: 0, y: 0, width: sf.width, height: height)
         hostingView.wantsLayer = true

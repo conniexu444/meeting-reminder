@@ -3,19 +3,18 @@ import SwiftUI
 struct AirplaneView: View {
     let meetingTitle: String
     let minutesUntil: Int
+    let flightDuration: Double
 
     @State private var xOffset: CGFloat
     @State private var opacity: Double = 1.0
 
     private var screenWidth: CGFloat { NSScreen.main?.frame.width ?? 1_440 }
-    private let flightDuration: Double = 14.0
-    // Generous estimate of HStack content width (plane + rope + banner)
-    private let estimatedContentWidth: CGFloat = 600
 
-    init(meetingTitle: String, minutesUntil: Int) {
-        self.meetingTitle = meetingTitle
-        self.minutesUntil = minutesUntil
-        _xOffset = State(initialValue: -650)   // start fully off-left (= -estimatedContentWidth - small buffer)
+    init(meetingTitle: String, minutesUntil: Int, flightDuration: Double) {
+        self.meetingTitle   = meetingTitle
+        self.minutesUntil   = minutesUntil
+        self.flightDuration = flightDuration
+        _xOffset = State(initialValue: -650)   // start fully off-left
     }
 
     var body: some View {
@@ -58,7 +57,7 @@ struct AirplaneView: View {
 }
 
 #Preview {
-    AirplaneView(meetingTitle: "Weekly Standup", minutesUntil: 5)
+    AirplaneView(meetingTitle: "Weekly Standup", minutesUntil: 5, flightDuration: 14)
         .frame(width: 1000, height: 100)
         .background(Color.gray.opacity(0.2))
 }
