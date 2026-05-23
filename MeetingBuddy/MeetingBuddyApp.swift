@@ -1,17 +1,18 @@
-//
-//  MeetingBuddyApp.swift
-//  MeetingBuddy
-//
-//  Created by connie on 5/21/26.
-//
-
 import SwiftUI
 
 @main
 struct MeetingBuddyApp: App {
+    @StateObject private var controller = AppController()
+
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        // Lives in the menu bar only — no Dock icon needed (set LSUIElement in Info.plist)
+        MenuBarExtra {
+            MenuBarView()
+                .environmentObject(controller)
+        } label: {
+            // Fills with yellow when a meeting is imminent (handled by AppController in future)
+            Image(systemName: "airplane")
         }
+        .menuBarExtraStyle(.window)
     }
 }

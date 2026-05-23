@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Disable sandboxing so localhost server + NWListener work without extra entitlements -->
+    <key>com.apple.security.app-sandbox</key>
+    <false/>
+    <!-- Outbound HTTPS to Google -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+    <!-- Inbound localhost for OAuth callback -->
+    <key>com.apple.security.network.server</key>
+    <true/>
+</dict>
+</plist>
