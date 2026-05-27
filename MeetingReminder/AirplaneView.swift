@@ -49,13 +49,14 @@ struct AirplaneView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .offset(x: xOffset)
         .opacity(opacity)
-        .onAppear {
-            // Start fully off-left; end fully off-right — both derived from measured content width
-            // so no hard-coded constants that could break with different text/assets.
-            let startOffset = -(contentWidth > 0 ? contentWidth : 800)
-            xOffset = startOffset
+        // onAppear fires before layout, so contentWidth is 0 at that point.
+        // onChange(of: contentWidth) fires after the first layout pass when the
+        // GeometryReader preference is delivered — guaranteeing a real width.
+        .onChange(of: contentWidth) { _, width in
+            guard width > 0, xOffset == 0 else { return }  // only start once
+            xOffset = -width  // start fully off-left
             withAnimation(.linear(duration: flightDuration)) {
-                xOffset = screenWidth + (contentWidth > 0 ? contentWidth : 900)
+                xOffset = screenWidth + width  // end fully off-right
             }
             // Fade out in the last half-second
             DispatchQueue.main.asyncAfter(deadline: .now() + flightDuration - 0.6) {
