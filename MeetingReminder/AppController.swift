@@ -1,6 +1,7 @@
 import Foundation
 import AppKit
 import Combine
+import ServiceManagement
 
 // Central coordinator: owns the Apple Calendar service + poller, and triggers the airplane.
 @MainActor
@@ -9,6 +10,7 @@ final class AppController: ObservableObject {
     @Published var flightDuration: Double {
         didSet { UserDefaults.standard.set(flightDuration, forKey: "flightDuration") }
     }
+    @Published var launchAtLogin: Bool = false
 
     /// Preset speeds (seconds for the plane to cross the screen).
     static let slowSpeed:   Double = 22
@@ -22,6 +24,8 @@ final class AppController: ObservableObject {
     init() {
         let saved = UserDefaults.standard.double(forKey: "flightDuration")
         self.flightDuration = saved > 0 ? saved : Self.normalSpeed
+
+        launchAtLogin = SMAppService.mainApp.status == .enabled
 
         hasAppleAccess = appleService.hasAccess
         startPollingIfReady()
@@ -37,6 +41,21 @@ final class AppController: ObservableObject {
                 self.startPollingIfReady()
             }
         }
+    }
+
+    /// Enable or disable launching the app automatically at login.
+    func setLaunchAtLogin(_ enabled: Bool) {
+        do {
+            if enabled {
+                try SMAppService.mainApp.register()
+            } else {
+                try SMAppService.mainApp.unregister()
+            }
+        } catch {
+            NSLog("Failed to update launch-at-login: \(error.localizedDescription)")
+        }
+        // Re-read the real status; the request may have failed or been overridden.
+        launchAtLogin = SMAppService.mainApp.status == .enabled
     }
 
     /// Manual trigger — shows the airplane immediately with a fake meeting.
