@@ -3,6 +3,25 @@ import EventKit
 
 final class AppleCalendarService: CalendarSourceProvider {
     private let store = EKEventStore()
+    private var storeObserver: NSObjectProtocol?
+
+    init() {
+        // Whenever Calendar.app adds/edits/deletes events, reset the store
+        // so the next fetchUpcomingEvents() sees fresh data.
+        storeObserver = NotificationCenter.default.addObserver(
+            forName: .EKEventStoreChanged,
+            object: store,
+            queue: .main
+        ) { [weak self] _ in
+            self?.store.reset()
+        }
+    }
+
+    deinit {
+        if let obs = storeObserver {
+            NotificationCenter.default.removeObserver(obs)
+        }
+    }
 
     /// True if we currently have full read access to calendar events.
     var hasAccess: Bool {
@@ -17,7 +36,10 @@ final class AppleCalendarService: CalendarSourceProvider {
     func fetchUpcomingEvents() async throws -> [CalendarEvent] {
         let now          = Date()
         let oneHourLater = now.addingTimeInterval(3_600)
-        let predicate    = store.predicateForEvents(withStart: now,
+        // Start 1 minute in the past so events whose start time just passed the poll
+        // boundary are still caught (e.g. event at 10:05:00, poll at 10:05:01).
+        let searchStart  = now.addingTimeInterval(-60)
+        let predicate    = store.predicateForEvents(withStart: searchStart,
                                                     end:       oneHourLater,
                                                     calendars: nil)
         let ekEvents = store.events(matching: predicate)

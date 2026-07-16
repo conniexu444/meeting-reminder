@@ -30,11 +30,21 @@ final class AppController: ObservableObject {
     // MARK: Public
 
     func requestAppleAccess() {
+        // macOS 26: TCC prompt won't appear for menu-bar-only apps unless the app
+        // is the active application first. Activate, then request.
+        NSApplication.shared.activate(ignoringOtherApps: true)
         Task {
             let granted = await appleService.requestAccess()
             await MainActor.run {
                 self.hasAppleAccess = granted
                 self.startPollingIfReady()
+                if !granted {
+                    // If the prompt still didn't appear (macOS 26 known issue),
+                    // open System Settings → Privacy → Calendars as fallback.
+                    if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Calendars") {
+                        NSWorkspace.shared.open(url)
+                    }
+                }
             }
         }
     }
@@ -68,18 +78,23 @@ final class AppController: ObservableObject {
     private func showAirplane(for event: CalendarEvent, minutesUntil: Int) {
         let duration = flightDuration
         DispatchQueue.main.async {
-            let window = AirplaneOverlayWindow(
-                meetingTitle:   event.title,
-                minutesUntil:   minutesUntil,
-                flightDuration: duration
-            )
-            window.makeKeyAndOrderFront(nil)
-            self.overlayWindows.append(window)
+            // Spawn one overlay per screen so the animation plays on every display
+            let screens = NSScreen.screens.isEmpty ? [NSScreen.main].compactMap { $0 } : NSScreen.screens
+            for screen in screens {
+                let window = AirplaneOverlayWindow(
+                    meetingTitle:   event.title,
+                    minutesUntil:   minutesUntil,
+                    flightDuration: duration,
+                    screen:         screen
+                )
+                window.makeKeyAndOrderFront(nil)
+                self.overlayWindows.append(window)
 
-            // Release shortly after the animation finishes (fade-out is 0.6s)
-            DispatchQueue.main.asyncAfter(deadline: .now() + duration + 1.5) {
-                self.overlayWindows.removeAll { $0 === window }
-                window.close()
+                // Release shortly after the animation finishes (fade-out is 0.6s)
+                DispatchQueue.main.asyncAfter(deadline: .now() + duration + 1.5) {
+                    self.overlayWindows.removeAll { $0 === window }
+                    window.close()
+                }
             }
         }
     }

@@ -4,17 +4,17 @@ struct AirplaneView: View {
     let meetingTitle: String
     let minutesUntil: Int
     let flightDuration: Double
+    let screenWidth: CGFloat
 
-    @State private var xOffset: CGFloat
+    @State private var xOffset: CGFloat = 0
     @State private var opacity: Double = 1.0
+    @State private var contentWidth: CGFloat = 0  // measured at runtime via GeometryReader
 
-    private var screenWidth: CGFloat { NSScreen.main?.frame.width ?? 1_440 }
-
-    init(meetingTitle: String, minutesUntil: Int, flightDuration: Double) {
+    init(meetingTitle: String, minutesUntil: Int, flightDuration: Double, screenWidth: CGFloat = NSScreen.main?.frame.width ?? 1_440) {
         self.meetingTitle   = meetingTitle
         self.minutesUntil   = minutesUntil
         self.flightDuration = flightDuration
-        _xOffset = State(initialValue: -650)   // start fully off-left
+        self.screenWidth    = screenWidth
     }
 
     var body: some View {
@@ -39,12 +39,24 @@ struct AirplaneView: View {
                 .zIndex(-1)
         }
         .fixedSize()
+        // Measure the actual rendered content width so start/end offsets are exact
+        .background(
+            GeometryReader { geo in
+                Color.clear.preference(key: ContentWidthKey.self, value: geo.size.width)
+            }
+        )
+        .onPreferenceChange(ContentWidthKey.self) { contentWidth = $0 }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .offset(x: xOffset)
         .opacity(opacity)
-        .onAppear {
+        // onAppear fires before layout, so contentWidth is 0 at that point.
+        // onChange(of: contentWidth) fires after the first layout pass when the
+        // GeometryReader preference is delivered — guaranteeing a real width.
+        .onChange(of: contentWidth) { _, width in
+            guard width > 0, xOffset == 0 else { return }  // only start once
+            xOffset = -width  // start fully off-left
             withAnimation(.linear(duration: flightDuration)) {
-                xOffset = screenWidth + 50   // end fully off-right
+                xOffset = screenWidth + width  // end fully off-right
             }
             // Fade out in the last half-second
             DispatchQueue.main.asyncAfter(deadline: .now() + flightDuration - 0.6) {
@@ -53,6 +65,14 @@ struct AirplaneView: View {
                 }
             }
         }
+    }
+}
+
+/// PreferenceKey used to bubble up the HStack's measured width from GeometryReader.
+private struct ContentWidthKey: PreferenceKey {
+    static let defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
     }
 }
 
