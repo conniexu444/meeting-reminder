@@ -36,6 +36,15 @@ struct MenuBarView: View {
 
             Divider()
 
+            Toggle("Start at login", isOn: Binding(
+                get: { controller.launchAtLogin },
+                set: { controller.setLaunchAtLogin($0) }
+            ))
+            .toggleStyle(.switch)
+            .font(.system(size: 13))
+
+            Divider()
+
             Button {
                 controller.testAirplane()
             } label: {
