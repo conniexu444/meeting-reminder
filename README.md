@@ -44,8 +44,22 @@ Dock.
    flying airplane ~5 minutes before each upcoming meeting
 
 The menu also shows your **next upcoming meeting**, lets you pick how early
-to be reminded (**3 / 5 / 10 min**), and has a **Test airplane** button that
-triggers the animation on demand (with a fake "Test Meeting" event).
+to be reminded (**3 / 5 / 10 min**), and has **Test airplane** and **Test
+bumblebee** buttons that trigger the animations on demand.
+
+### Bumblebee cue
+
+About 3 minutes before the next meeting, a little bumblebee flies near the
+pointer and keeps hovering there until you acknowledge it. Press the flower
+in the bottom corner of the screen (or **Acknowledge reminder** in the menu).
+That meeting won't cue the bee again. If you never press the flower, the bee
+steps aside once the meeting starts.
+
+The airplane still follows the **Remind me** picker. The bee is a separate
+nudge and always uses about a 3 minute lead (a 2–4 minute window, so the
+30 second check can't miss it).
+
+**Try it:** menu bar → **Test bumblebee** → move the pointer → click the flower.
 
 ---
 
@@ -92,6 +106,13 @@ automatically. Default is still 5 minutes.
 To change the code default, see `AppController.alertNormal` and
 `CalendarPoller.alertMinutesBefore`.
 
+### Bumblebee — `MeetingReminder/BumblebeeOverlayWindow.swift`
+
+`BumblebeeCue.leadMinutes` is how early the bee appears (default 3).
+The bee and flower artwork live in `MeetingReminder/BumblebeeView.swift`.
+Reduce Motion turns off the wing flap and the hover wobble; the bee still
+follows the pointer.
+
 ### Artwork
 
 Swap the airplane, banner, app icon, or menu bar icon by replacing the PNGs in:
@@ -115,6 +136,11 @@ Swap the airplane, banner, app icon, or menu bar icon by replacing the PNGs in:
   window level so it floats above every other window, including fullscreen apps.
   Inside is a SwiftUI view that animates `xOffset` from off-left to off-right,
   fading out at the end.
+- **The bumblebee** — about 3 minutes out, a click-through sticker follows the
+  pointer. A flower in the bottom corner acknowledges that meeting without
+  pulling MeetingReminder to the front. **Acknowledge reminder** in the menu
+  is the keyboard path. Acknowledged ids are remembered in memory, same as
+  the airplane's "already notified" set.
 
 ---
 
@@ -130,6 +156,8 @@ MeetingReminder/
 ├── CalendarPoller.swift         # 60s timer, fires onMeetingSoon
 ├── AirplaneView.swift           # SwiftUI airplane + banner animation
 ├── AirplaneOverlayWindow.swift  # Transparent NSPanel above everything
+├── BumblebeeView.swift          # Bee + flower sticker artwork
+├── BumblebeeOverlayWindow.swift # Cursor-following bee + corner flower
 ├── MeetingReminder.entitlements # Sandbox disabled
 └── Assets.xcassets/             # Airplane, banner, app icon, menu bar icon
 ```

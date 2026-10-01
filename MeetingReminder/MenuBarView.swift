@@ -87,6 +87,35 @@ struct MenuBarView: View {
             }
             .buttonStyle(.plain)
 
+            Button {
+                controller.testBumblebee()
+            } label: {
+                Label {
+                    Text("Test bumblebee")
+                } icon: {
+                    Text("🐝")
+                        .font(.system(size: 13))
+                        .accessibilityHidden(true)
+                }
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Test bumblebee")
+            .accessibilityHint("Flies a bee near the pointer until you press the flower")
+
+            if controller.bumblebeeActive {
+                Text("Press the corner flower, or acknowledge here")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Button {
+                    controller.acknowledgeBumblebee()
+                } label: {
+                    Label("Acknowledge reminder", systemImage: "checkmark.circle")
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint("Stops the bumblebee for this meeting")
+            }
+
             Divider()
 
             Button {

@@ -1,9 +1,10 @@
 import Foundation
 import AppKit
 import Combine
+import os
 import ServiceManagement
 
-// Central coordinator: owns the Apple Calendar service + poller, and triggers the airplane.
+// Central coordinator: owns the Apple Calendar service + poller, and triggers the airplane and bumblebee.
 @MainActor
 final class AppController: ObservableObject {
     @Published var hasAppleAccess: Bool = false
@@ -36,6 +37,17 @@ final class AppController: ObservableObject {
     private var poller: CalendarPoller?
     private var overlayWindows: [AirplaneOverlayWindow] = []
     private var nextMeetingTimer: Timer?
+
+    /// True while a bumblebee is waiting for the flower (or the menu) to acknowledge.
+    @Published var bumblebeeActive: Bool = false
+    private var beeWindow: BumblebeeCueWindow?
+    private var flowerWindows: [FlowerAckWindow] = []
+    private var activeBeeEventID: String?
+    private var beeIsTest = false
+    private var beeGeneration = 0
+    private var acknowledgedBeeIDs: Set<String> = []
+    private var acknowledgedBeeOrder: [String] = []
+    private let log = Logger(subsystem: "com.connie.MeetingReminder", category: "Bumblebee")
 
     init() {
         let savedSpeed = UserDefaults.standard.double(forKey: "flightDuration")
@@ -101,6 +113,22 @@ final class AppController: ObservableObject {
         showAirplane(for: fake, minutesUntil: mins)
     }
 
+    /// Manual trigger — bee follows the pointer until the flower is pressed.
+    func testBumblebee() {
+        let fake = CalendarEvent(
+            id:        "bumblebee-test-\(UUID().uuidString)",
+            title:     "Test Meeting",
+            startDate: Date().addingTimeInterval(BumblebeeCue.leadMinutes * 60),
+            endDate:   Date().addingTimeInterval(BumblebeeCue.leadMinutes * 60 + 1_800)
+        )
+        showBumblebee(for: fake, isTest: true)
+    }
+
+    /// Stops the cue for the meeting that is currently showing.
+    func acknowledgeBumblebee() {
+        hideBumblebee(recordAck: true)
+    }
+
     // MARK: Private
 
     private func startPollingIfReady() {
@@ -137,13 +165,18 @@ final class AppController: ObservableObject {
                     .filter { $0.startDate > now }
                     .sorted { $0.startDate < $1.startDate }
                 if let first = upcoming.first {
+                    let minutes = first.startDate.timeIntervalSince(now) / 60
                     nextMeeting = first
-                    nextMeetingMinutes = Int(ceil(first.startDate.timeIntervalSince(now) / 60))
+                    nextMeetingMinutes = Int(ceil(minutes))
+                    updateBumblebeeCue(for: first, minutesUntil: minutes)
                 } else {
                     nextMeeting = nil
                     nextMeetingMinutes = nil
+                    updateBumblebeeCue(for: nil, minutesUntil: nil)
                 }
             } catch {
+                // Leave an in-progress bee alone. A transient fetch failure
+                // should not dismiss a reminder that has not been acknowledged.
                 nextMeeting = nil
                 nextMeetingMinutes = nil
             }
@@ -172,5 +205,89 @@ final class AppController: ObservableObject {
                 }
             }
         }
+    }
+
+    /// Arms the bee about 3 minutes before the next meeting and leaves it up
+    /// until that meeting is acknowledged or its start time passes.
+    /// The airplane's Remind me picker does not change this lead time.
+    private func updateBumblebeeCue(for event: CalendarEvent?, minutesUntil: Double?) {
+        guard !beeIsTest else { return }
+
+        guard let event, let minutesUntil else {
+            if bumblebeeActive { hideBumblebee(recordAck: false) }
+            return
+        }
+
+        if acknowledgedBeeIDs.contains(event.id) {
+            if activeBeeEventID == event.id { hideBumblebee(recordAck: false) }
+            return
+        }
+
+        // Already cueing this meeting — keep hovering until ack or start.
+        if activeBeeEventID == event.id { return }
+
+        if bumblebeeActive { hideBumblebee(recordAck: false) }
+
+        guard BumblebeeCue.isInsideTriggerWindow(minutesUntil: minutesUntil) else { return }
+        showBumblebee(for: event, isTest: false)
+    }
+
+    private func showBumblebee(for event: CalendarEvent, isTest: Bool) {
+        if !isTest, activeBeeEventID == event.id, bumblebeeActive { return }
+
+        hideBumblebee(recordAck: false)
+        activeBeeEventID = event.id
+        beeIsTest = isTest
+        bumblebeeActive = true
+        beeGeneration += 1
+        let generation = beeGeneration
+
+        if isTest {
+            log.info("Bumblebee test cue")
+        } else {
+            log.info("Bumblebee cue for '\(event.title)'")
+        }
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.beeGeneration == generation else { return }
+
+            let bee = BumblebeeCueWindow()
+            bee.startFollowingCursor()
+            bee.orderFrontRegardless()
+            self.beeWindow = bee
+
+            let screens = NSScreen.screens.isEmpty ? [NSScreen.main].compactMap { $0 } : NSScreen.screens
+            for screen in screens where screen.visibleFrame.width > 80 && screen.visibleFrame.height > 80 {
+                let flower = FlowerAckWindow(meetingTitle: event.title, screen: screen) { [weak self] in
+                    Task { @MainActor in
+                        self?.acknowledgeBumblebee()
+                    }
+                }
+                flower.orderFrontRegardless()
+                self.flowerWindows.append(flower)
+            }
+        }
+    }
+
+    private func hideBumblebee(recordAck: Bool) {
+        beeGeneration += 1
+        if recordAck, !beeIsTest, let id = activeBeeEventID {
+            acknowledgedBeeIDs.insert(id)
+            acknowledgedBeeOrder.append(id)
+            if acknowledgedBeeOrder.count > 200 {
+                let evicted = acknowledgedBeeOrder.removeFirst()
+                acknowledgedBeeIDs.remove(evicted)
+            }
+            log.info("Bumblebee acknowledged")
+        }
+
+        activeBeeEventID = nil
+        beeIsTest = false
+        bumblebeeActive = false
+        beeWindow?.stopFollowingCursor()
+        beeWindow?.close()
+        beeWindow = nil
+        for window in flowerWindows { window.close() }
+        flowerWindows.removeAll()
     }
 }
