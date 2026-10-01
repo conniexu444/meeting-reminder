@@ -10,25 +10,45 @@ final class AppController: ObservableObject {
     @Published var flightDuration: Double {
         didSet { UserDefaults.standard.set(flightDuration, forKey: "flightDuration") }
     }
+    /// Minutes before a meeting to fly the airplane banner. Persisted.
+    @Published var alertMinutesBefore: Double {
+        didSet {
+            UserDefaults.standard.set(alertMinutesBefore, forKey: "alertMinutesBefore")
+            poller?.alertMinutesBefore = alertMinutesBefore
+        }
+    }
     @Published var launchAtLogin: Bool = false
+    /// Soonest upcoming meeting within the next hour (if any).
+    @Published var nextMeeting: CalendarEvent? = nil
+    @Published var nextMeetingMinutes: Int? = nil
 
     /// Preset speeds (seconds for the plane to cross the screen).
     static let slowSpeed:   Double = 22
     static let normalSpeed: Double = 14
     static let fastSpeed:   Double = 8
 
+    /// Preset alert lead times (minutes).
+    static let alertSoon:   Double = 3
+    static let alertNormal: Double = 5
+    static let alertEarly:  Double = 10
+
     private let appleService = AppleCalendarService()
     private var poller: CalendarPoller?
     private var overlayWindows: [AirplaneOverlayWindow] = []
+    private var nextMeetingTimer: Timer?
 
     init() {
-        let saved = UserDefaults.standard.double(forKey: "flightDuration")
-        self.flightDuration = saved > 0 ? saved : Self.normalSpeed
+        let savedSpeed = UserDefaults.standard.double(forKey: "flightDuration")
+        self.flightDuration = savedSpeed > 0 ? savedSpeed : Self.normalSpeed
+
+        let savedAlert = UserDefaults.standard.double(forKey: "alertMinutesBefore")
+        self.alertMinutesBefore = savedAlert > 0 ? savedAlert : Self.alertNormal
 
         launchAtLogin = SMAppService.mainApp.status == .enabled
 
         hasAppleAccess = appleService.hasAccess
         startPollingIfReady()
+        startNextMeetingRefresh()
     }
 
     // MARK: Public
@@ -42,6 +62,7 @@ final class AppController: ObservableObject {
             await MainActor.run {
                 self.hasAppleAccess = granted
                 self.startPollingIfReady()
+                self.refreshNextMeeting()
                 if !granted {
                     // If the prompt still didn't appear (macOS 26 known issue),
                     // open System Settings → Privacy → Calendars as fallback.
@@ -70,13 +91,14 @@ final class AppController: ObservableObject {
 
     /// Manual trigger — shows the airplane immediately with a fake meeting.
     func testAirplane() {
+        let mins = Int(alertMinutesBefore)
         let fake = CalendarEvent(
             id:        UUID().uuidString,
             title:     "Test Meeting",
-            startDate: Date().addingTimeInterval(300),
+            startDate: Date().addingTimeInterval(Double(mins) * 60),
             endDate:   Date().addingTimeInterval(1800)
         )
-        showAirplane(for: fake, minutesUntil: 5)
+        showAirplane(for: fake, minutesUntil: mins)
     }
 
     // MARK: Private
@@ -86,12 +108,46 @@ final class AppController: ObservableObject {
         poller = nil
         guard hasAppleAccess else { return }
 
-        let p = CalendarPoller(service: appleService)
+        let p = CalendarPoller(service: appleService, alertMinutesBefore: alertMinutesBefore)
         p.onMeetingSoon = { [weak self] event, minutes in
             self?.showAirplane(for: event, minutesUntil: minutes)
         }
         p.start()
         poller = p
+    }
+
+    private func startNextMeetingRefresh() {
+        refreshNextMeeting()
+        nextMeetingTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { _ in
+            DispatchQueue.main.async { [weak self] in self?.refreshNextMeeting() }
+        }
+    }
+
+    private func refreshNextMeeting() {
+        guard hasAppleAccess else {
+            nextMeeting = nil
+            nextMeetingMinutes = nil
+            return
+        }
+        Task { @MainActor in
+            do {
+                let events = try await appleService.fetchUpcomingEvents()
+                let now = Date()
+                let upcoming = events
+                    .filter { $0.startDate > now }
+                    .sorted { $0.startDate < $1.startDate }
+                if let first = upcoming.first {
+                    nextMeeting = first
+                    nextMeetingMinutes = Int(ceil(first.startDate.timeIntervalSince(now) / 60))
+                } else {
+                    nextMeeting = nil
+                    nextMeetingMinutes = nil
+                }
+            } catch {
+                nextMeeting = nil
+                nextMeetingMinutes = nil
+            }
+        }
     }
 
     private func showAirplane(for event: CalendarEvent, minutesUntil: Int) {
