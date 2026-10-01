@@ -43,8 +43,9 @@ Dock.
 3. That's it — every 60 seconds the app checks your calendar and shows the
    flying airplane ~5 minutes before each upcoming meeting
 
-The menu also has a **Test airplane** button that triggers the animation
-on demand (with a fake "Test Meeting" event) — useful for tweaking the visuals.
+The menu also shows your **next upcoming meeting**, lets you pick how early
+to be reminded (**3 / 5 / 10 min**), and has a **Test airplane** button that
+triggers the animation on demand (with a fake "Test Meeting" event).
 
 ---
 
@@ -83,11 +84,13 @@ sync, then quit and reopen MeetingReminder so it re-reads the calendar list.
 | Font / text size / color | `font(.custom("Comic Sans MS", size:))`, `foregroundStyle(...)` |
 | Vertical screen position | `MeetingReminder/AirplaneOverlayWindow.swift` → `yPos` |
 
-### Alert timing — `MeetingReminder/CalendarPoller.swift`
+### Alert timing
 
-```swift
-static let alertMinutesBefore = 5   // change to alert at a different lead time
-```
+Use the menu bar **Remind me** picker (3 / 5 / 10 min). Preference is saved
+automatically. Default is still 5 minutes.
+
+To change the code default, see `AppController.alertNormal` and
+`CalendarPoller.alertMinutesBefore`.
 
 ### Artwork
 

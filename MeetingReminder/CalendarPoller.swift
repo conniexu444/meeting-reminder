@@ -4,11 +4,14 @@ import os
 @MainActor
 final class CalendarPoller {
     /// How many minutes before a meeting to fire the alert.
-    static let alertMinutesBefore: Double = 5
+    var alertMinutesBefore: Double {
+        didSet { recalculateWindows() }
+    }
+
     /// Trigger when remaining time falls in [alertMinutesBefore - 1, alertMinutesBefore + 1].
     /// Use a 2-minute window to guarantee at least one poll hit with a 30s interval.
-    private static let alertWindowLow:  Double = alertMinutesBefore - 1   // 4.0 min
-    private static let alertWindowHigh: Double = alertMinutesBefore + 1   // 6.0 min
+    private var alertWindowLow: Double = 4.0
+    private var alertWindowHigh: Double = 6.0
 
     var onMeetingSoon: ((CalendarEvent, Int) -> Void)?
 
@@ -21,8 +24,10 @@ final class CalendarPoller {
 
     private let log = Logger(subsystem: "com.connie.MeetingReminder", category: "CalendarPoller")
 
-    init(service: any CalendarSourceProvider) {
+    init(service: any CalendarSourceProvider, alertMinutesBefore: Double = 5) {
         self.service = service
+        self.alertMinutesBefore = alertMinutesBefore
+        recalculateWindows()
     }
 
     func start() {
@@ -39,6 +44,11 @@ final class CalendarPoller {
     }
 
     // MARK: Private
+
+    private func recalculateWindows() {
+        alertWindowLow = alertMinutesBefore - 1
+        alertWindowHigh = alertMinutesBefore + 1
+    }
 
     private func poll() {
         // Explicit @MainActor ensures all reads/writes of actor-isolated state
@@ -63,8 +73,8 @@ final class CalendarPoller {
 
                 log.debug("'\(event.title)' starts in \(String(format: "%.1f", minutesDouble)) min (notified: \(self.notifiedIDs.contains(event.id)))")
 
-                guard minutesDouble >= Self.alertWindowLow,
-                      minutesDouble <= Self.alertWindowHigh,
+                guard minutesDouble >= self.alertWindowLow,
+                      minutesDouble <= self.alertWindowHigh,
                       !notifiedIDs.contains(event.id) else { continue }
 
                 log.info("FIRING alert for '\(event.title)' — \(minutesInt) min away")
