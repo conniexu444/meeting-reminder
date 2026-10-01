@@ -40,8 +40,8 @@ Dock.
 
 1. Click the ✈️ in the menu bar
 2. Click **Grant Calendar access** → click **Allow** on the macOS privacy prompt
-3. That's it — every 60 seconds the app checks your calendar and shows the
-   flying airplane ~5 minutes before each upcoming meeting
+3. That's it — every 30 seconds the app checks your calendar and shows the
+   flying airplane at the **Remind me** lead time (default 5 minutes)
 
 The menu also shows your **next upcoming meeting**, lets you pick how early
 to be reminded (**3 / 5 / 10 min**), and has **Test airplane** and **Test
@@ -130,7 +130,7 @@ Swap the airplane, banner, app icon, or menu bar icon by replacing the PNGs in:
 - **Calendar access** — `EventKit` with a one-time macOS privacy prompt. Reads
   from every calendar configured in Calendar.app, including synced Google /
   iCloud / Exchange accounts
-- **Polling** — every 60 seconds, fetches the next hour of events; an in-memory
+- **Polling** — every 30 seconds, fetches the next hour of events; an in-memory
   set prevents firing the same alert twice
 - **The airplane** — a borderless, transparent `NSPanel` at screen-saver
   window level so it floats above every other window, including fullscreen apps.
@@ -153,7 +153,7 @@ MeetingReminder/
 ├── MenuBarView.swift            # Status / Grant access / Test / Quit
 ├── CalendarSource.swift         # CalendarEvent + provider protocol
 ├── AppleCalendarService.swift   # EventKit implementation
-├── CalendarPoller.swift         # 60s timer, fires onMeetingSoon
+├── CalendarPoller.swift         # 30s timer, fires onMeetingSoon
 ├── AirplaneView.swift           # SwiftUI airplane + banner animation
 ├── AirplaneOverlayWindow.swift  # Transparent NSPanel above everything
 ├── BumblebeeView.swift          # Bee + flower sticker artwork
